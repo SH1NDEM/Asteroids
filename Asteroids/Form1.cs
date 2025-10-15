@@ -13,8 +13,8 @@ namespace Asteroids
         private bool isDownPressed = false;
 
         // Началььные настройки корабля 
-        private int x = 0;
-        private int y = 0;
+        private int x = 40;
+        private int y = 23;
         private int size = 10;
         private int spaseship_Speed = 1;
 
@@ -23,7 +23,7 @@ namespace Asteroids
             InitializeComponent();
             // Отрисовка объектов
             this.Paint += new PaintEventHandler(Spaceship);
-            this.Paint += Asteriods;
+            //this.Paint += Asteriods;
 
             // Обработка события клавиатуры
             this.KeyPreview = true;
