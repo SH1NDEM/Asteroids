@@ -13,14 +13,13 @@ namespace Asteroids
         private bool isUpPressed = false;
 
         // Началььные настройки корабля 
-        private int x = 40;
-        private int y = 23;
-        private int size = 10;
+        private int x = 57;
+        private int y = 32;
+        private int size = 7;
         double angle = 10 * Math.PI / 180; // 10 градусов
         double spaceship_Angle = 270 * Math.PI / 180;
-        double spaceship_Angle_Ineria = 270 * Math.PI / 180;
-        private double spaseship_Inertia = 0;
-        private double spaseship_Speed = 5;
+        double velocityX = 0;
+        double velocityY = 0;
         private double x1, y1, x2, y2, x3, y3, x4, y4;
 
 
@@ -79,9 +78,8 @@ namespace Asteroids
             }
         }
 
-        private void Spaceship_Move(object sender, KeyEventArgs e)
+        private void Spaceship_Move(object sender, EventArgs e)
         {
-            //Поворот корабля налево
             if (isLeftPressed)
             {
                 double cosA = Math.Cos(angle);
@@ -99,11 +97,9 @@ namespace Asteroids
                 x2 = newX2; y2 = newY2;
                 x3 = newX3; y3 = newY3;
                 x4 = newX4; y4 = newY4;
-
                 spaceship_Angle += 10 * Math.PI / 180;
             }
 
-            //Поворот корабля направо
             if (isRightPressed)
             {
                 double cosA = Math.Cos(angle);
@@ -123,57 +119,29 @@ namespace Asteroids
                 x4 = newX4; y4 = newY4;
                 spaceship_Angle -= 10 * Math.PI / 180;
             }
-            // Лететь вперед
+
             if (isUpPressed)
             {
-                // Вычисляем приращение
-                double dx = spaseship_Speed * -Math.Cos(spaceship_Angle);
-                double dy = spaseship_Speed * Math.Sin(spaceship_Angle);
-
-                // Смещаем все точки корабля
-                x1 += dx; y1 += dy;
-                x2 += dx; y2 += dy;
-                x3 += dx; y3 += dy;
-                x4 += dx; y4 += dy;
-
-                // И при необходимости — сам центр (если ты его используешь)
-                x += (int)dx;
-                y += (int)dy;
-                spaseship_Inertia = spaseship_Speed;
-
-                if (spaseship_Inertia == 0)
-                {
-                    spaceship_Angle_Ineria = spaceship_Angle;
-                }
-                else 
-                {
-                    spaceship_Angle_Ineria = (spaceship_Angle + spaceship_Angle_Ineria) /2;
-                }
+                double accel = 0.3;
+                velocityX += accel * -Math.Cos(spaceship_Angle);
+                velocityY += accel * Math.Sin(spaceship_Angle);
             }
         }
 
         private void Spaceship_Inertia_Move(object sender, EventArgs e)
         {
-            if (spaseship_Inertia > 0.1)
-            {
-                double dx = spaseship_Inertia * -Math.Cos(spaceship_Angle_Ineria);
-                double dy = spaseship_Inertia * Math.Sin(spaceship_Angle_Ineria);
+            // Обновляем координаты корабля
+            x1 += velocityX; y1 += velocityY;
+            x2 += velocityX; y2 += velocityY;
+            x3 += velocityX; y3 += velocityY;
+            x4 += velocityX; y4 += velocityY;
 
-                x1 += dx; y1 += dy;
-                x2 += dx; y2 += dy;
-                x3 += dx; y3 += dy;
-                x4 += dx; y4 += dy;
+            x += (int)velocityX;
+            y += (int)velocityY;
 
-                x += (int)dx;
-                y += (int)dy;
-
-                // Плавное снижение: коэфф < 1
-                spaseship_Inertia *= 0.95; // 0.95 — скорость затухания; уменьшайте/увеличивайте по вкусу
-            }
-            else
-            {
-                spaseship_Inertia = 0;
-            }
+            // Плавное торможение
+            velocityX *= 0.98;
+            velocityY *= 0.98;
         }
 
 
