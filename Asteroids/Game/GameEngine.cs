@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using Asteroids.Entities;
 
@@ -7,25 +6,21 @@ namespace Asteroids.Game
 {
     public class GameEngine
     {
-        private List<IGameObject> gameObjects = new List<IGameObject>();
-        private Spaceship spaceship;
+        private readonly Spaceship spaceship;
 
-        public GameEngine(Form form)
+        public GameEngine()
         {
-            spaceship = new Spaceship(form.ClientSize);
-            gameObjects.Add(spaceship);
+            spaceship = new Spaceship(); // объект создаём сразу
         }
 
         public void Update()
         {
-            foreach (var obj in gameObjects)
-                obj.Update();
+            spaceship.Update();
         }
 
         public void Draw(Graphics g)
         {
-            foreach (var obj in gameObjects)
-                obj.Draw(g);
+            spaceship.Draw(g);
         }
 
         public void OnKeyDown(Keys key)

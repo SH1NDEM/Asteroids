@@ -19,16 +19,16 @@
             // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Desktop;
-            ClientSize = new Size(784, 461);
+            ClientSize = new Size(832, 503);
+            Margin = new Padding(3, 4, 3, 4);
+            MaximumSize = new Size(850, 550);
+            MinimumSize = new Size(850, 550);
             Name = "Form1";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Asteroids";
-            //Load += Form1_Load;
-            Paint += Form1_Paint;
-            KeyDown += Form1_KeyDown;
-            KeyUp += Form1_KeyUp;
             ResumeLayout(false);
         }
     }

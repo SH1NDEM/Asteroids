@@ -5,6 +5,6 @@ namespace Asteroids.Entities
     public interface IGameObject
     {
         void Update();
-        void Draw(Graphics g);
+        void Draw(PaintEventArgs e);
     }
 }
