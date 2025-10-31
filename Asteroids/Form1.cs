@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using Asteroids.Entities;
 using Asteroids.Game;
 
 namespace Asteroids
