@@ -9,15 +9,27 @@ namespace Asteroids.Entities
         private bool isRightPressed = false;
         private bool isUpPressed = false;
 
-        private int x = 43;
-        private int y = 27;
-        private int size = 10;
+        public int x = 43;
+        public int y = 27;
+        public int size = 10;
         private double angle = 10 * Math.PI / 180;
         private double spaceship_Angle = 270 * Math.PI / 180;
         private double velocityX = 0;
         private double velocityY = 0;
 
+        private bool isInvincible = false;       // флаг бессмертия
+        private DateTime invincibleUntil;        // время, до которого действует бессмертие
+
+
         public double x1, y1, x2, y2, x3, y3, x4, y4;
+        public List<Bullet> GetBullets() => bullets;
+
+        public void ActivateInvincibility(double seconds)
+        {
+            isInvincible = true;
+            invincibleUntil = DateTime.Now.AddSeconds(seconds);
+        }
+
 
         // Конструктор без параметров, корабль всегда начинает на фиксированной позиции
         public Spaceship()
@@ -33,11 +45,41 @@ namespace Asteroids.Entities
             y4 = (1 + y) * size;
         }
 
+        private List<Bullet> bullets = new();
+
+        public void Shoot()
+        {
+            // координаты пули из носа корабля
+            double noseX = (x3 + x1) / 2;
+            double noseY = (y3 + y1) / 2;
+
+            bullets.Add(new Bullet(noseX, noseY, spaceship_Angle));
+        }
+
+
         public void Update()
         {
+            // Проверяем истечение бессмертия
+            if (isInvincible && DateTime.Now > invincibleUntil)
+                isInvincible = false;
+
             Spaceship_Move();
             Spaceship_Inertia_Move();
+
+            // Обновляем пули
+            for (int i = bullets.Count - 1; i >= 0; i--)
+            {
+                bullets[i].Update();
+
+                if (bullets[i].X < 0 || bullets[i].X > 850 ||
+                    bullets[i].Y < 0 || bullets[i].Y > 550)
+                {
+                    bullets.RemoveAt(i);
+                    continue;
+                }
+            }
         }
+
 
         public void Portaling()
         {
@@ -80,13 +122,38 @@ namespace Asteroids.Entities
 
         public void Draw(Graphics g)
         {
+            // если корабль неуязвим и сейчас нечётный кадр — пропускаем отрисовку
+            if (isInvincible && (DateTime.Now.Millisecond / 100) % 2 == 0)
+                return;
+
             Pen pen = new Pen(Color.White, 2);
             g.DrawLine(pen, (int)x1, (int)y1, (int)x2, (int)y2);
             g.DrawLine(pen, (int)x2, (int)y2, (int)x3, (int)y3);
             g.DrawLine(pen, (int)x3, (int)y3, (int)x4, (int)y4);
             g.DrawLine(pen, (int)x4, (int)y4, (int)x1, (int)y1);
             pen.Dispose();
+
+            foreach (var bullet in bullets)
+                bullet.Draw(g);
         }
+
+
+        public void ResetToCenter()
+        {
+            // Центр экрана (подгони под размеры окна)
+            x1 = 425; y1 = 275;
+            x2 = x1 - 10; y2 = y1 + 10;
+            x3 = x1; y3 = y1 - 15;
+            x4 = x1 + 10; y4 = y1 + 10;
+
+            x = (int)(x1 / size);
+            y = (int)(y1 / size);
+
+            velocityX = 0;
+            velocityY = 0;
+            spaceship_Angle = 270 * Math.PI / 180;
+        }
+
 
         public void OnKeyDown(Keys key)
         {

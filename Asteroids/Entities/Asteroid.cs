@@ -10,6 +10,7 @@ namespace Asteroids.Entities
 {
     internal class Asteroid
     {
+        private double _spin; // скорость вращения вокруг своей оси
         private double _angle;
         public int _position_x;
         public int _position_y;
@@ -46,6 +47,12 @@ namespace Asteroids.Entities
             }
         }
 
+        public int GetSize()
+        {
+            return _size;
+        }
+
+
         private int Speed
         {
             get { return _speed; }
@@ -58,20 +65,23 @@ namespace Asteroids.Entities
             set { _angle = value * Math.PI / 180; }
         }
 
-        public Asteroid(int size, int speed, int position_x, int position_y, double angle, double rotation)
+        public Asteroid(int size, int speed, int position_x, int position_y, double angle, double spin)
         {
-            // Размер — 1, 2 или 3 (или любое целое в пределах количества форм)
-            int shapeIndex = Math.Clamp(size - 1, 0, x.Count - 1); // чтобы индекс не выходил за границы
-            _size = 5 + size * 2; // визуальный масштаб на экране
+            int shapeIndex = Math.Clamp(size - 1, 0, x.Count - 1);
+            _size = 5 + size * 2;
             _speed = speed;
             _position_x = position_x;
             _position_y = position_y;
-            _angle = angle * Math.PI / 180.0;
-            _rotation = rotation;
+            _angle = angle * Math.PI / 180.0; // направление полёта
+
+            // Ограничиваем скорость вращения (иначе крутится слишком быстро)
+            _spin = Math.Clamp(spin, -3, 3);
 
             x_new = x[shapeIndex].ToArray();
             y_new = y[shapeIndex].ToArray();
         }
+
+
 
         public void Update()
         {
@@ -101,8 +111,8 @@ namespace Asteroids.Entities
 
         public void Asteroid_Move()
         {
-            double cosA = Math.Cos(_angle);
-            double sinA = -Math.Sin(_angle);
+            double cosA = Math.Cos(_spin);
+            double sinA = -Math.Sin(_spin);
 
             for (int i = 0; i < x_new.Length; i++)
             {
@@ -112,10 +122,16 @@ namespace Asteroids.Entities
                 x_new[i] = x * cosA - y * sinA;
                 y_new[i] = x * sinA + y * cosA;
             }
-            _position_x += (int)(_speed * Math.Cos(_rotation));
-            _position_y += (int)(_speed * Math.Sin(_rotation));
+            _position_x += (int)(_speed * Math.Cos(_angle));
+            _position_y += (int)(_speed * Math.Sin(_angle));
             portaling();
         }
+
+        public double GetRadius()
+        {
+            return _size * 2.5; // можно подобрать под визуальный масштаб
+        }
+
 
         public void portaling()
         {
@@ -130,6 +146,11 @@ namespace Asteroids.Entities
                 else if (_position_y < 0)
                     _position_y = 550;
             }
+        }
+
+        public void collosio()
+        {
+
         }
     }
 }
